@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/BastienCarbonnier/bot_test/issues"
   },
-  "homepage": "https://github.com/BastienCarbonnier/bot_test#readme",
+  "homepage": "https://github.com/BastienCarbonnier/bot_test",
   "dependencies": {
     "botbuilder": "^3.13.1",
     "restify": "^6.3.4"
