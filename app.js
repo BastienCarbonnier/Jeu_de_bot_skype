@@ -23,8 +23,8 @@ var bot = new builder.UniversalBot(connector, function (session) {
 
 const http = require('http');
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const hostname = 'essai1903-bottest1903.7e14.starter-us-west-2.openshiftapps.com';
+const port = 8080;
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
