@@ -1,14 +1,28 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+const http = require('http');
 
+const hostname = '0.0.0.0';
+const port = 8080;
 // Get environment variable
 var server_port = process.env.OPENSHIFT_PORT || 8080;
-var server_ip_address = process.env.OPENSHIFT_IP || '127.0.0.1';
+var server_ip_address = process.env.OPENSHIFT_IP || '0.0.0.0';
 
 // Setup Restify Server
+/*
 var server = restify.createServer();
 server.listen(server_port,server_ip_address, function () {
    console.log( "Listening on " + server_ip_address + ", port " + server_port );
+});*/
+
+server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World\n');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
 });
 /*
 // Create chat connector for communicating with the Bot Framework Service
