@@ -19,8 +19,8 @@ server.listen(server_port,server_ip_address, function () {
 
 // Create bot and add dialogs
 var connector = new builder.ChatConnector({
-    appId: "1111",
-    appPassword: "essai"
+    appId: "4b9732bc-4088-40f3-99b7-8bf99bebe22a",
+    appPassword: "hlTTFJ18;(zrpbaRJD691^}"
 });
 var bot = new builder.UniversalBot(connector);
 bot.dialog('/', function (session) {
