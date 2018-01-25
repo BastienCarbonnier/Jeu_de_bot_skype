@@ -1,12 +1,16 @@
-/*var restify = require('restify');
+var restify = require('restify');
 var builder = require('botbuilder');
+
+// Get environment variable
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 
 // Setup Restify Server
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url);
+server.listen(server_port,server_ip_address, function () {
+   console.log( "Listening on " + server_ip_address + ", port " + server_port );
 });
-
+/*
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: process.env.MICROSOFT_APP_ID,
@@ -19,19 +23,5 @@ server.post('/api/messages', connector.listen());
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session) {
     session.send("You said: %s", session.message.text);
-});*/
-
-const http = require('http');
-
-const hostname = 'essai1903-bottest1903.7e14.starter-us-west-2.openshiftapps.com';
-const port = 8080;
-
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
 });
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+*/
