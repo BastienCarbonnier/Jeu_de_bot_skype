@@ -3,11 +3,11 @@ var builder = require('botbuilder');
 
 // Setup Restify Server
 // Get environment variable
-var server_port = 3978;
-var server_ip_address = 'localhost';
+var server_port = 8080;
+var server_ip_address = '0.0.0.0';
 
 var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
+server.listen(process.env.port || process.env.PORT || 8080, function () {
    console.log('%s listening to %s', server.name, server.url);
 });
 
