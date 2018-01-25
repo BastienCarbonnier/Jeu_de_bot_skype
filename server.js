@@ -1,7 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
 var http = require('http');
-
+/*
 var hostname = '0.0.0.0';
 var port = 8080;
 // Get environment variable
@@ -9,25 +9,30 @@ var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
 
 // Setup Restify Server
-/*
+
 var server = restify.createServer();
 server.listen(server_port,server_ip_address, function () {
    console.log( "Listening on " + server_ip_address + ", port " + server_port );
-});*/
-function respond(req, res, next) {
-  res.send('hello ' + req.params.name);
-  next();
-}
+});
+*/
 
-var server = restify.createServer();
-server.get('/hello/:name', respond);
-server.head('/hello/:name', respond);
 
-server.listen(8080, function() {
-  console.log('%s listening at %s', server.name, server.url);
+// Create bot and add dialogs
+var connector = new builder.ChatConnector({
+    appId: "1111",
+    appPassword: "essai"
+});
+var bot = new builder.UniversalBot(connector);
+bot.dialog('/', function (session) {
+    session.send('Hello World');
 });
 
-
+// Setup Restify Server
+var server = restify.createServer();
+server.post('/api/messages', connector.listen());
+server.listen(8080, function () {
+    console.log('%s listening to %s', server.name, server.url);
+});
 
 /*
 var server = http.createServer((req, res) => {
@@ -39,9 +44,6 @@ var server = http.createServer((req, res) => {
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });*/
-
-
-
 
 
 /*
