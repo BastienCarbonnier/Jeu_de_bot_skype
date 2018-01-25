@@ -3,17 +3,19 @@ var builder = require('botbuilder');
 
 // Setup Restify Server
 // Get environment variable
-var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0';
+var server_port = 3978;
+var server_ip_address = 'localhost';
 
 var server = restify.createServer();
-server.listen(server_port,server_ip_address, function () {
-   console.log( "Listening on " + server_ip_address + ", port " + server_port );
+server.listen(process.env.port || process.env.PORT || 3978, function () {
+   console.log('%s listening to %s', server.name, server.url);
 });
+
 // Create chat connector for communicating with the Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: "4b9732bc-4088-40f3-99b7-8bf99bebe22a",
     appPassword: "hlTTFJ18;(zrpbaRJD691^}"
+
 });
 
 // Listen for messages from users
