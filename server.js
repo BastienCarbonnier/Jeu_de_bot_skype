@@ -6,6 +6,7 @@ var server_port = 8080;
 var server_ip_address = '0.0.0.0';
 
 var server = restify.createServer();
+console.log(process.env.ESSAI);
 server.listen(process.env.port || process.env.PORT || 8080, function () {
    console.log('%s listening to %s', server.name, server.url);
 });
