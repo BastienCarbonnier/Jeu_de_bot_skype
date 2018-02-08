@@ -1,0 +1,3 @@
+[submodule "Traitement_de_bot"]
+	path = Traitement_de_bot
+	url = https://github.com/BastienCarbonnier/Traitement_de_bot.git
