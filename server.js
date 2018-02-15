@@ -2,7 +2,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var https = require("https");
 var util = require("util");
-
+var analyse =  require("./Traitement_de_bot/analyse.js");
 
 var APPID = "df67dcdb-c37d-46af-88e1-8b97951ca1c2";//81fa9cdd-4a02-426f-a426-400ba180b9fd";
 var APPKEY = "7cc98d8bea6b443e846ffb71579ef836";
@@ -32,5 +32,5 @@ server.post('/api/messages', connector.listen());
 
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("Voici le message reçu : %s", session.message.text);
+    session.send("%s", analyse.parse(session.message.text));
 });
