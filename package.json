@@ -1,23 +1,24 @@
 {
-  "name": "bot_test",
+  "name": "jeu_de_bot_skype",
   "version": "1.0.0",
-  "description": "bot de test",
+  "description": "jeu de bot skype",
   "main": "server.js",
   "scripts": {
-      "start": "node server.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BastienCarbonnier/bot_test.git"
+    "url": "git+https://github.com/BastienCarbonnier/Jeu_de_bot_skype.git"
   },
   "author": "Bastien Carbonnier",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/BastienCarbonnier/bot_test/issues"
+    "url": "https://github.com/BastienCarbonnier/Jeu_de_bot_skype/issues"
   },
-  "homepage": "https://github.com/BastienCarbonnier/bot_test",
+  "homepage": "https://github.com/BastienCarbonnier/Jeu_de_bot_skype",
   "dependencies": {
     "botbuilder": "^3.13.1",
     "restify": "^6.3.4"
-  }
+  },
+  "devDependencies": {}
 }
