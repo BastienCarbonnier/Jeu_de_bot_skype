@@ -16,7 +16,7 @@ keys3 : 7cc98d8bea6b443e846ffb71579ef836 OK
 
 // Setup Restify Server
 var server = restify.createServer();
-
+var session;
 server.listen(process.env.PORT || 8080, function () {
    console.log('%s listening to %s', server.name, server.url);
 });
@@ -31,7 +31,12 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
-var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("%s", analyse.parse(session.message.text));
-    console.log("User id : "+session.message.user.id);
+var bot = new builder.UniversalBot(connector, function (session_loc) {
+    session = session_loc;
+    analyse.parse(session_loc.message.text);
+    console.log("User id : "+session_loc.message.user.id);
 });
+
+exports.sendMessage = function (message){
+    session.send(message);
+};
