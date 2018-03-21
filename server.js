@@ -44,7 +44,7 @@ function sendLogToUser(email){
         service: 'outlook',
         auth: {
             user: 'jdbter16@outlook.fr',
-            pass: process.env.MAIL_PASSWORD
+            pass: 'Jeudemots'//process.env.MAIL_PASSWORD
         }
     });
 
@@ -64,7 +64,7 @@ function sendLogToUser(email){
             if (error) {
                 console.log(error);
             } else {
-                sendMessage("email sent");
+                session.send("L'email a bien été envoyé à l'adresse suivante : "+email);
                 console.log('Email sent: ' + info.response);
             }
         });
