@@ -3,16 +3,8 @@ var builder = require('botbuilder');
 var https = require("https");
 var util = require("util");
 var analyse =  require("./Traitement_de_bot/analyse.js");
-
-var APPID = "df67dcdb-c37d-46af-88e1-8b97951ca1c2";//81fa9cdd-4a02-426f-a426-400ba180b9fd";
-var APPKEY = "7cc98d8bea6b443e846ffb71579ef836";
-/*
-LUIS :
-name : jdb_luis
-keys1 : 6197088245d54b8ea25413e34fc08417 KO
-keys2 : 22b25abf20324fb2b26a46331dbbabcd KO
-keys3 : 7cc98d8bea6b443e846ffb71579ef836 OK
- */
+var fs = require('fs');
+var nodemailer = require('nodemailer');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -33,10 +25,51 @@ server.post('/api/messages', connector.listen());
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, function (session_loc) {
     session = session_loc;
-    analyse.parse(session_loc.message.text);
-    console.log("User id : "+session_loc.message.user.id);
-});
 
+    var message = session_loc.message.text;
+    if (message.substring(0,8)==="!sendlog"){
+        sendLogToUser(message.substring(9));
+    }
+    else {
+        analyse.parse(message,session_loc.message.user.name);
+        console.log("User id : "+session_loc.message.user.id);
+    }
+
+
+});
+function sendLogToUser(email){
+
+    console.log(email);
+    var transporter = nodemailer.createTransport({
+        service: 'outlook',
+        auth: {
+            user: 'jdbter16@outlook.fr',
+            pass: 'Jeudemots'
+        }
+    });
+
+    fs.readFile("./log/test.txt", function (err, data) {
+
+        var mailOptions = {
+            from: 'jdbter16@outlook.fr',
+            to: email,
+            subject: 'Logs de Jeu de Bot Skype',
+            text: 'Veuillez trouver ci-joint les logs de Jeu de Bot Skype.',
+            attachments:[{   // file on disk as an attachment
+                filename: 'logs.txt',
+                content: data // stream this file
+            }]
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                sendMessage("email sent");
+                console.log('Email sent: ' + info.response);
+            }
+        });
+    });
+}
 exports.sendMessage = function (message){
     session.send(message);
 };
