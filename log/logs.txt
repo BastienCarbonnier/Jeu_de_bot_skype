@@ -1,5 +1,0 @@
-essai
-21:3:2018 19:43:17 ; User ;Est-ce que la vache est belle ?
-21:3:2018 19:43:17 ; BOT ;undefined   -----FAIL-----
-21:3:2018 19:43:28 ; User ;Que pense tu des bretons ?
-21:3:2018 19:43:28 ; BOT ;undefined   -----FAIL-----
