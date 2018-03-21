@@ -39,6 +39,10 @@ var bot = new builder.UniversalBot(connector, function (session_loc) {
 });
 function sendLogToUser(email){
 
+    if (process.env.MAIL_PASSWORD){
+        var res =data.match(/>(.*)</g);
+        email = res[0].substring(1,res[0].length-1);
+    }
     console.log(email);
     var transporter = nodemailer.createTransport({
         service: 'outlook',
