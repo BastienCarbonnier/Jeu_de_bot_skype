@@ -52,26 +52,23 @@ function sendLogToUser(email){
         }
     });
 
-    fs.readFile("./log/test.txt", function (err, data) {
-
-        var mailOptions = {
-            from: 'jdbter16@outlook.fr',
-            to: email,
-            subject: 'Logs de Jeu de Bot Skype',
-            text: 'Veuillez trouver ci-joint les logs de Jeu de Bot Skype.',
-            attachments:[{   // file on disk as an attachment
-                filename: 'logs.txt',
-                content: data // stream this file
-            }]
-        };
-        transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-                console.log(error);
-            } else {
-                session.send("L'email a bien été envoyé à l'adresse suivante : "+email);
-                console.log('Email sent: ' + info.response);
-            }
-        });
+    var mailOptions = {
+        from: 'jdbter16@outlook.fr',
+        to: email,
+        subject: 'Logs de Jeu de Bot Skype',
+        text: 'Veuillez trouver ci-joint les logs de Jeu de Bot Skype.',
+        attachments:[{   // file on disk as an attachment
+            filename: 'logs.txt',
+            path: "./log/logs.txt" // stream this file
+        }]
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            session.send("L'email a bien été envoyé à l'adresse suivante : "+email);
+            console.log('Email sent: ' + info.response);
+        }
     });
 }
 exports.sendMessage = function (message){
