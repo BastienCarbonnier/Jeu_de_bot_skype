@@ -59,7 +59,7 @@ function sendLogToUser(email){
         text: 'Veuillez trouver ci-joint les logs de Jeu de Bot Skype.',
         attachments:[{   // file on disk as an attachment
             filename: 'logs.txt',
-            path: "./log/logs.txt" // stream this file
+            path: "./logs.txt" // stream this file
         }]
     };
     transporter.sendMail(mailOptions, function(error, info){
