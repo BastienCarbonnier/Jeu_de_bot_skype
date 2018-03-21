@@ -44,7 +44,7 @@ function sendLogToUser(email){
         service: 'outlook',
         auth: {
             user: 'jdbter16@outlook.fr',
-            pass: 'Jeudemots'
+            pass: process.env.MAIL_PASSWORD
         }
     });
 
