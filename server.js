@@ -44,11 +44,19 @@ function sendLogToUser(email){
         email = res[0].substring(1,res[0].length-1);
     }
     console.log(email);
+    var password = "";
+    if (process.env.MAIL_PASSWORD){
+        password = process.env.MAIL_PASSWORD;
+    }
+    else {
+        var config = require("./config.json");
+        password = config.password;
+    }
     var transporter = nodemailer.createTransport({
         service: 'outlook',
         auth: {
             user: 'jdbter16@outlook.fr',
-            pass: 'Jeudemots'//process.env.MAIL_PASSWORD
+            pass: password
         }
     });
 
