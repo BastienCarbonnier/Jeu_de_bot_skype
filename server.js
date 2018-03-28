@@ -1,10 +1,9 @@
-var restify = require('restify');
-var builder = require('botbuilder');
-var https = require("https");
-var util = require("util");
-var analyse =  require("./Traitement_de_bot/analyse.js");
-var fs = require('fs');
-var nodemailer = require('nodemailer');
+var restify    = require('restify'),
+    builder    = require('botbuilder'),
+    analyse    = require("./Traitement_de_bot/analyse.js"),
+    tools      = require("./Traitement_de_bot/tools.js"),
+    fs         = require('fs'),
+    nodemailer = require('nodemailer');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -19,24 +18,27 @@ var connector = new builder.ChatConnector({
     appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
-// Listen for messages from users
-server.post('/api/messages', connector.listen());
+// Initialize open json files and create hashmap to compose words
+tools.initialization(function(hashmap,heber_ordi){
+    // Listen for messages from users
+    server.post('/api/messages', connector.listen());
 
-// Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
-var bot = new builder.UniversalBot(connector, function (session_loc) {
-    session = session_loc;
+    var bot = new builder.UniversalBot(connector, function (session_loc) {
+        session = session_loc;
 
-    var message = session_loc.message.text;
-    if (message.substring(0,8)==="!sendlog"){
-        sendLogToUser(message.substring(9));
-    }
-    else {
-        analyse.parse(message,session_loc.message.user.name);
-        console.log("User id : "+session_loc.message.user.id);
-    }
+        var message = session_loc.message.text;
+        if (message.substring(0,8)==="!sendlog"){
+            sendLogToUser(message.substring(9));
+        }
+        else {
+            analyse.parse(message,session_loc.message.user.name,hashmap,heber_ordi);
+            console.log("User id : "+session_loc.message.user.id);
+        }
 
 
+    });
 });
+
 function sendLogToUser(email){
 
     if (process.env.MAIL_PASSWORD){
