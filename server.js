@@ -19,7 +19,7 @@ var connector = new builder.ChatConnector({
 });
 
 // Initialize open json files and create hashmap to compose words
-tools.initialization(function(hashmap,heber_ordi){
+tools.initialization(function(hashmap_mc){
     // Listen for messages from users
     server.post('/api/messages', connector.listen());
 
@@ -31,7 +31,7 @@ tools.initialization(function(hashmap,heber_ordi){
             sendLogToUser(message.substring(9));
         }
         else {
-            analyse.parse(message,session_loc.message.user.name,hashmap,heber_ordi);
+            analyse.parse(message,session_loc.message.user.name,hashmap_mc);
             console.log("User id : "+session_loc.message.user.id);
         }
 
