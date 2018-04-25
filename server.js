@@ -3,7 +3,8 @@ var restify    = require('restify'),
     analyse    = require("./Traitement_de_bot/analyse.js"),
     tools      = require("./Traitement_de_bot/tools.js"),
     fs         = require('fs'),
-    nodemailer = require('nodemailer');
+    nodemailer = require('nodemailer'),
+    request    = require('./request.js');
 
 // Setup Restify Server
 var server = restify.createServer();
@@ -27,15 +28,32 @@ tools.initialization(function(hashmap_mc){
 
     var bot = new builder.UniversalBot(connector, function (session_loc) {
         session = session_loc;
+        
+        var pseudo = session_loc.message.user.name;
+        var idBot  = session_loc.message.user.id;
+        request.insertUser(pseudo,idBot,function(err, result){
+            var message = session_loc.message.text;
+            if (message.substring(0,8)==="!sendlog"){
+                sendLogToUser(message.substring(9));
+            }
+            else if (message.substring(0,12)==="!activedebug"){
+                request.activeDebugMode(pseudo, function(){
+                    session.send("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant :");
+                    session.send("!desactivedebug");
 
-        var message = session_loc.message.text;
-        if (message.substring(0,8)==="!sendlog"){
-            sendLogToUser(message.substring(9));
-        }
-        else {
-            analyse.parse(message,session_loc.message.user.name,hashmap_mc);
-            console.log("User id : "+session_loc.message.user.id);
-        }
+                });
+            }
+            else if (message.substring(0,15)==="!desactivedebug"){
+                request.desactiveDebugMode(pseudo, function(){
+                    session.send("Le mode debug a bien été désactivé");
+                });
+            }
+            else {
+                analyse.parse(message,session_loc.message.user.name,hashmap_mc);
+                console.log("User id : "+session_loc.message.user.id);
+            }
+        });
+
 
 
     });
