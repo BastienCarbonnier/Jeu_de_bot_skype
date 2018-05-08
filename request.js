@@ -7,7 +7,7 @@ var rp          = require('request-promise'),
 
 var url_ws = "https://2018hlin601ter16.proj.info-ufr.univ-montp2.fr/WebServiceBddTer16/requeteur.php?";
 
-exports.insertUser = function(pseudo,idBot,callback){
+function insertUser(pseudo,idBot,callback){
     var url = windows1252.encode(url_ws+"cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot);
     const options = {
         uri: url,
@@ -29,9 +29,9 @@ exports.insertUser = function(pseudo,idBot,callback){
         console.log(err);
         callback(err);
     });
-};
+}
 
-exports.insertRelation = function(fw_id,sw_id,rel_id,pseudo,callback){
+function insertRelation(fw_id,sw_id,rel_id,pseudo,callback){
     var url = windows1252.encode(url_ws+"cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
     const options = {
         uri: url,
@@ -53,9 +53,9 @@ exports.insertRelation = function(fw_id,sw_id,rel_id,pseudo,callback){
         console.log(err);
         callback(err);
     });
-};
+}
 
-exports.isRelationInBDD = function(fw,sw,rel_id,callback){
+function isRelationInBDD(fw,sw,rel_id,callback){
     var url = windows1252.encode(url_ws+"cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
     const options = {
         uri: url,
@@ -77,9 +77,9 @@ exports.isRelationInBDD = function(fw,sw,rel_id,callback){
         console.log(err);
         callback(err);
     });
-};
+}
 
-exports.activeDebugMode = function(pseudo,callback){
+function activeDebugMode (pseudo,callback){
     var url = windows1252.encode(url_ws+"cmd=active_debug&pseudo="+pseudo);
     const options = {
         uri: url,
@@ -101,8 +101,8 @@ exports.activeDebugMode = function(pseudo,callback){
         console.log(err);
         callback(err);
     });
-};
-exports.desactiveDebugMode = function(pseudo,callback){
+}
+function desactiveDebugMode(pseudo,callback){
     var url = windows1252.encode(url_ws+"cmd=desactive_debug&pseudo="+pseudo);
     const options = {
         uri: url,
@@ -124,9 +124,9 @@ exports.desactiveDebugMode = function(pseudo,callback){
         console.log(err);
         callback(err);
     });
-};
+}
 
-exports.isInDebugMode = function(pseudo,callback){
+function isInDebugMode (pseudo,callback){
     var url = windows1252.encode(url_ws+"cmd=is_in_debug&pseudo="+pseudo);
     const options = {
         uri: url,
@@ -151,4 +151,11 @@ exports.isInDebugMode = function(pseudo,callback){
         console.log(err);
         callback(err);
     });
-};
+}
+
+module.exports.insertUser = insertUser;
+module.exports.insertRelation = insertRelation;
+module.exports.isRelationInBDD = isRelationInBDD;
+module.exports.desactiveDebugMode = desactiveDebugMode;
+module.exports.activeDebugMode = activeDebugMode;
+module.exports.isInDebugMode = isInDebugMode;
