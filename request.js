@@ -5,10 +5,11 @@ var rp          = require('request-promise'),
     fs 			= require("fs");
 
 
-var url_ws = "https://2018hlin601ter16.proj.info-ufr.univ-montp2.fr/WebServiceBddTer16/requeteur.php?";
+var url_ws = "https://2018hlin601ter16.proj.info-ufr.univ-montp2.fr/WebServiceBddTer16/requeteur.php";
 
-function insertUser(pseudo,idBot,callback){
-    var url = windows1252.encode(url_ws+"cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot);
+function insertUser(pseudo,idBot,session,callback){
+    var url = windows1252.encode(url_ws+"?cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot+"&session="+session);
+
     const options = {
         uri: url,
         encoding: 'binary',
@@ -31,8 +32,73 @@ function insertUser(pseudo,idBot,callback){
     });
 }
 
+function getUserSession(pseudo,callback){
+    var url = windows1252.encode(url_ws+"?cmd=get_user_session&pseudo="+pseudo);
+
+    const options = {
+        uri: url,
+        encoding: 'binary',
+        transform: function (body) {
+            return cheerio.load(body, {decodeEntities: false});
+        }
+    };
+
+    rp(options)
+    .then(($) => {
+
+        var result = $('result').text();
+        //console.log(result);
+        callback(null,result);
+
+
+    })
+    .catch((err) => {
+        console.log(err);
+        callback(err);
+    });
+}
+
+function insertUserPost(pseudo,idBot,session,callback){
+    //var url = windows1252.encode(url_ws+"cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot+"&session="+session);
+
+    const options = {
+        method:'POST',
+        uri: url_ws,
+        encoding: 'binary',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+
+        form: {
+            'cmd': "insert_user",
+            'pseudo': pseudo,
+            'idBot':idBot,
+            'session':session
+        },
+
+        transform: function (body) {
+            return cheerio.load(body, {decodeEntities: false});
+        }
+    };
+
+    rp(options)
+    .then(($) => {
+
+        var result = $('body').text();
+        //console.log(result);
+        callback(null,result);
+
+
+    })
+    .catch((err) => {
+        console.log(err);
+        callback(err);
+    });
+
+}
+
 function insertRelation(fw_id,sw_id,rel_id,pseudo,callback){
-    var url = windows1252.encode(url_ws+"cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
+    var url = windows1252.encode(url_ws+"?cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -56,7 +122,7 @@ function insertRelation(fw_id,sw_id,rel_id,pseudo,callback){
 }
 
 function isRelationInBDD(fw,sw,rel_id,callback){
-    var url = windows1252.encode(url_ws+"cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
+    var url = windows1252.encode(url_ws+"?cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -80,7 +146,7 @@ function isRelationInBDD(fw,sw,rel_id,callback){
 }
 
 function activeDebugMode (pseudo,callback){
-    var url = windows1252.encode(url_ws+"cmd=active_debug&pseudo="+pseudo);
+    var url = windows1252.encode(url_ws+"?cmd=active_debug&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -93,6 +159,7 @@ function activeDebugMode (pseudo,callback){
     .then(($) => {
 
         var result = $('result').text();
+        console.log(result);
         callback(null,result);
 
 
@@ -103,7 +170,7 @@ function activeDebugMode (pseudo,callback){
     });
 }
 function desactiveDebugMode(pseudo,callback){
-    var url = windows1252.encode(url_ws+"cmd=desactive_debug&pseudo="+pseudo);
+    var url = windows1252.encode(url_ws+"?cmd=desactive_debug&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -127,7 +194,7 @@ function desactiveDebugMode(pseudo,callback){
 }
 
 function isInDebugMode (pseudo,callback){
-    var url = windows1252.encode(url_ws+"cmd=is_in_debug&pseudo="+pseudo);
+    var url = windows1252.encode(url_ws+"?cmd=is_in_debug&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -154,8 +221,10 @@ function isInDebugMode (pseudo,callback){
 }
 
 module.exports.insertUser = insertUser;
+module.exports.insertUserPost = insertUserPost;
 module.exports.insertRelation = insertRelation;
 module.exports.isRelationInBDD = isRelationInBDD;
 module.exports.desactiveDebugMode = desactiveDebugMode;
 module.exports.activeDebugMode = activeDebugMode;
 module.exports.isInDebugMode = isInDebugMode;
+module.exports.getUserSession = getUserSession;

@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 var restify    = require('restify'),
     builder    = require('botbuilder'),
     analyse    = require("./Traitement_de_bot/analyse.js"),
@@ -6,9 +8,10 @@ var restify    = require('restify'),
     nodemailer = require('nodemailer'),
     request    = require('./request.js');
 
+
 // Setup Restify Server
 var server = restify.createServer();
-var session;
+
 
 server.listen(process.env.PORT || 8080, function () {
    console.log('%s listening to %s', server.name, server.url);
@@ -21,38 +24,44 @@ var connector = new builder.ChatConnector({
     sendTyping: true
 });
 
+var bot;
 // Initialize open json files and create hashmap to compose words
 tools.initialization(function(hashmap_mc){
     // Listen for messages from users
     server.post('/api/messages', connector.listen());
 
-    var bot = new builder.UniversalBot(connector, function (session_loc) {
-        session = session_loc;
-        
+    bot = new builder.UniversalBot(connector, function (session_loc) {
+
+
         var pseudo = session_loc.message.user.name;
         var idBot  = session_loc.message.user.id;
-        request.insertUser(pseudo,idBot,function(err, result){
-            var message = session_loc.message.text;
-            if (message.substring(0,8)==="!sendlog"){
-                sendLogToUser(message.substring(9));
-            }
-            else if (message.substring(0,12)==="!activedebug"){
-                request.activeDebugMode(pseudo, function(){
-                    session.send("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant :");
-                    session.send("!desactivedebug");
 
-                });
-            }
-            else if (message.substring(0,15)==="!desactivedebug"){
-                request.desactiveDebugMode(pseudo, function(){
-                    session.send("Le mode debug a bien été désactivé");
-                });
-            }
-            else {
-                analyse.parse(message,session_loc.message.user.name,hashmap_mc);
-                console.log("User id : "+session_loc.message.user.id);
-            }
-        });
+        var json_adresse = JSON.stringify(session_loc.message.address);//JSON.stringify(session_loc);
+        //json_session
+            request.insertUserPost(pseudo,idBot,json_adresse,function(err, result){
+                //console.log(json_session);
+                var message = session_loc.message.text;
+                if (message.substring(0,8)==="!sendlog"){
+                    sendLogToUser(message.substring(9));
+                }
+                else if (message.substring(0,12)==="!activedebug"){
+                    request.activeDebugMode(pseudo, function(){
+                        sendMessage("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant :",pseudo);
+                        sendMessage("!desactive debug",pseudo);
+
+                    });
+                }
+                else if (message.substring(0,15)==="!desactivedebug"){
+                    request.desactiveDebugMode(pseudo, function(){
+                        sendMessage("Le mode debug a bien été désactivé",pseudo);
+                    });
+                }
+                else {
+                    analyse.parse(message,pseudo,hashmap_mc);
+                    //console.log("User id : "+session_loc.message.user.id);
+                }
+            });
+
 
 
 
@@ -101,6 +110,17 @@ function sendLogToUser(email){
         }
     });
 }
-exports.sendMessage = function (message){
-    session.send(message);
+exports.sendMessage = function (message,pseudo){
+    request.getUserSession(pseudo,function(err, adresse){
+        if (!err){
+            //let session = new builder.Session(result);
+            //"callstack":[{"id":"*:/","state":{"BotBuilder.Data.WaterfallStep":0}}]
+            var msg = new builder.Message().address(JSON.parse(adresse));
+            msg.text(message);
+            //msg.textLocale('en-US');
+            bot.send(msg);
+        }
+
+    });
+
 };
