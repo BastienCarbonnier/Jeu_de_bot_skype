@@ -272,6 +272,73 @@ export interface IIdentity {
 
     /** If true the identity is a group. Typically only found on conversation identities. */
     isGroup?: boolean;
+
+    /** Indicates the type of the conversation in channels that distinguish. */
+    conversationType?: string;
+}
+
+/** List of members within a conversation. */
+export interface IConversationMembers {
+    /** Conversation ID. */
+    id: string;
+
+    /** List of members in this conversation. */
+    members: IIdentity[];
+}
+
+/** Result object returned from `ChatConnector.getConversations()`. */
+export interface IConversationsResult {
+    /** Paging token. */
+    continuationToken: string;
+
+    /** List of conversations. */
+    conversations: IConversationMembers[];
+}
+
+/**
+ * An interface representing TokenResponse.
+ * A response that includes a user token
+ *
+ */
+export interface ITokenResponse {
+    /**
+     * The connection name
+     */
+    connectionName: string;
+    /**
+     * The user token
+     */
+    token: string;
+    /**
+     * Expiration for the token, in ISO 8601 format
+     * (e.g. "2007-04-05T14:30Z")
+     */
+    expiration: string;
+}
+
+
+/** Exported bot state data. */
+export interface IBotStateData {
+    /** ID of the conversation the data is for (if relevant.) */
+    conversationId?: string;
+
+    /** ID of the user the data is for (if relevant.) */
+    userId?: string;
+
+    /** Exported data. */
+    data: string;
+
+    /** Timestamp of when the data was last modified. */
+    lastModified: string;
+}
+
+/** Result object returned from `ChatConnector.exportBotStateData()`.  */
+export interface IBotStateDataResult {
+    /** Paging token. */
+    continuationToken: string;
+
+    /** Exported bot state records. */
+    botStateData: IBotStateData[];
 }
 
 /**
@@ -366,6 +433,26 @@ export interface ISigninCard {
     title: string;
 
     /** Sign in action. */
+    buttons: ICardAction[];
+}
+
+/**
+ * An interface representing OAuthCard.
+ * A card representing a request to peform a sign in via OAuth
+ *
+ */
+export interface IOAuthCard {
+    /**
+     * Text for signin request
+     */
+    text: string;
+    /**
+     * The name of the registered connection
+     */
+    connectionName: string;
+    /**
+     * Action to use to perform signin
+     */
     buttons: ICardAction[];
 }
 
@@ -1285,6 +1372,9 @@ export interface IChatConnectorEndpoint {
 
     /** Default value is https://state.botframework.com. Configurable via IChatConnectorSettings.stateEndpoint. */
     stateEndpoint: string;
+
+    /** Default value is https://api.botframework.com. Configurable via IChatConnectorSettings.oAuthEndpoint. */
+    oAuthEndpoint: string;
 }
 
 /** Options used to initialize a UniversalBot instance. */
@@ -2602,6 +2692,31 @@ export class SigninCard implements IIsAttachment {
 
     /** Returns the JSON for the card, */
     toAttachment(): IAttachment;
+}
+
+/** Card builder class that simplifies building oauth cards. */
+export class OAuthCard implements IIsAttachment {
+
+    /**
+     * Creates a new OAuthCard.
+     * @param session (Optional) will be used to localize any text.
+     */
+    constructor(session?: Session);
+
+    /** The name of the OAuth connection to use. */
+    connectionName(name: string): OAuthCard;
+
+    /** Title of the Card. */
+    text(prompts: TextType, ...args: any[]): OAuthCard;
+
+    /** Signin button label. */
+    button(title: TextType): OAuthCard;
+
+    /** Returns the JSON for the card, */
+    toAttachment(): IAttachment;
+
+    /** Factory method for returning a message with the proper signin attachment */
+    static create(connector: ChatConnector, session: Session, connectionName: string, text: string, buttonTitle: string, done: (err: Error, message: Message) => void): void;
 }
 
 /** Card builder class that simplifies building receipt cards. */
@@ -4138,6 +4253,68 @@ export class ChatConnector implements IConnector, IBotStorage {
 
     /** Deletes an existing message. */
     delete(address: IAddress, done: (err: Error) => void): void;
+
+    /** 
+     * Retrieves a list of all the conversations the bot has on a given channel. Results will be 
+     * sent back to the bot in pages along with a `continuationToken` that can be used to fetch 
+     * the next page of conversations.  This data can be used to delete all of the conversation data
+     * for a user via the [deleteConversationMember()](#deleteconversationmember) method.
+     * @param serviceUrl The service url for the channel being queried. This can be found in the `address.serviceUrl` for a message sent to the bot.
+     * @param continuationToken The continuation token for the next page of results to fetch.  This should be `undefined` for the first page requested.
+     * @param done Callback to recieve the next page of results.
+     */
+    getConversations(serviceUrl: string, continuationToken: string|undefined, done: (err: Error, result?: IConversationsResult) => void): void;
+    
+    /**
+     * Deletes the data for an individual user within a conversation.
+     * @param serviceUrl The service url for the channel being updated. This can be found in the `address.serviceUrl` for a message sent to the bot.
+     * @param conversationId ID of the conversation with the member to delete.
+     * @param memberId ID of the member to delete.
+     * @param done Callback invoked upon completion of the delete operation.
+     */
+    deleteConversationMember(serviceUrl: string, conversationId: string, memberId: string, done: (err: Error) => void): void;
+    
+    /**
+     * Exports bot state data persisted for a given channel.
+     * @param serviceUrl The service url for the channel being queried. This can be found in the `address.serviceUrl` for a message sent to the bot.
+     * @param channelId ID of the channel being exported. This can be found in the `address.channelId` for a message sent to the bot.
+     * @param continuationToken The continuation token for the next page of results to fetch.  This should be `undefined` for the first page requested.
+     * @param done Callback to recieve the next page of results.
+     */
+    exportBotStateData(serviceUrl: string, channelId: string, continuationToken: string|undefined, done: (err: Error, results: IBotStateDataResult) => void): void;
+
+    /**
+     * Attempts to retrieve the token for a user that's in a signin flow.
+     * @param address Address of the user and channel to login.
+     * @param connectionName Name of the auth connection to use.
+     * @param magicCode (Optional) Optional user entered code to validate.
+     * @param done Callback to retrieve the users token.
+     */
+    getUserToken(address: IChatConnectorAddress, connectionName: string, magicCode: string|undefined, done: (err: Error, results: ITokenResponse) => void): void;
+
+    /**
+     * Signs the user out with the token server.
+     * @param address Address of the user and channel to signout.
+     * @param connectionName Name of the auth connection to use.
+     * @param done Callback to retrieve the users token.
+     */
+    signOutUser(address: IChatConnectorAddress, connectionName: string, done: (err: Error, results: ITokenResponse) => void): void;
+    
+    /**
+     * Gets a signin link from the token server that can be sent as part of a SigninCard. 
+     * @param address Address of the user and channel to get signin link for.
+     * @param connectionName Name of the auth connection to use.
+     * @param done Callback to retrieve the link.
+     */
+    getSignInLink(address: IChatConnectorAddress, connectionName: string, done: (err: Error, link: string) => void): void;
+
+    /**
+     * Tells the token service to emulate the sending of OAuthCards.
+     * @param serviceUrl The service url for the channel being queried. This can be found in the `address.serviceUrl` for a message sent to the bot.
+     * @param emulate If `true` the token service will emulate the sending of OAuthCards.
+     * @param done Callback invoked upon completion of the operation.
+     */
+    emulateOAuthCards(serviceUrl: string, emulate: boolean, done: (err: Error) => void): void;
 
     /** Reads in data from the Bot Frameworks state service. */
     getData(context: IBotStorageContext, callback: (err: Error, data: IBotStorageData) => void): void;

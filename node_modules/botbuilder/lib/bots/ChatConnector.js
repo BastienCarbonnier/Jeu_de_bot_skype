@@ -31,7 +31,8 @@ var ChatConnector = (function () {
                 emulatorAuthV31IssuerV2: 'https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0',
                 emulatorAuthV32IssuerV1: 'https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/',
                 emulatorAuthV32IssuerV2: 'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0',
-                stateEndpoint: this.settings.stateEndpoint || 'https://state.botframework.com'
+                stateEndpoint: this.settings.stateEndpoint || 'https://state.botframework.com',
+                oAuthEndpoint: this.settings.oAuthEndpoint || 'https://api.botframework.com',
             };
         }
         this.botConnectorOpenIdMetadata = new OpenIdMetadata_1.OpenIdMetadata(this.settings.endpoint.botConnectorOpenIdMetadata);
@@ -277,6 +278,93 @@ var ChatConnector = (function () {
         var options = {
             method: 'DELETE',
             url: urlJoin(address.serviceUrl, path),
+            json: true
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err); });
+    };
+    ChatConnector.prototype.getConversations = function (serviceUrl, continuationToken, done) {
+        var path = '/v3/conversations';
+        if (continuationToken) {
+            path += '?continuationToken=' + encodeURIComponent(continuationToken);
+        }
+        var options = {
+            method: 'GET',
+            url: urlJoin(serviceUrl, path),
+            json: true
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err, body); });
+    };
+    ChatConnector.prototype.deleteConversationMember = function (serviceUrl, conversationId, memberId, done) {
+        var path = '/v3/conversations/' + encodeURIComponent(conversationId) +
+            '/members/' + encodeURIComponent(memberId);
+        var options = {
+            method: 'DELETE',
+            url: urlJoin(serviceUrl, path),
+            json: true
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err); });
+    };
+    ChatConnector.prototype.exportBotStateData = function (serviceUrl, channelId, continuationToken, done) {
+        var path = '/v3/botstate/' + channelId + '/exportBotStateData';
+        if (continuationToken) {
+            path += '?continuationToken=' + encodeURIComponent(continuationToken);
+        }
+        var options = {
+            method: 'GET',
+            url: urlJoin(serviceUrl, path),
+            json: true
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err, body); });
+    };
+    ChatConnector.prototype.getUserToken = function (address, connectionName, magicCode, done) {
+        var path = 'api/usertoken/GetToken?userId=' + encodeURIComponent(address.user.id);
+        path += '&connectionName=' + encodeURIComponent(connectionName);
+        if (magicCode) {
+            path += '&code=' + encodeURIComponent(magicCode);
+        }
+        var options = {
+            method: 'GET',
+            url: urlJoin(this.getOAuthPath(address), path),
+            json: true
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err, body); });
+    };
+    ChatConnector.prototype.signOutUser = function (address, connectionName, done) {
+        var path = 'api/usertoken/SignOut?userId=' + encodeURIComponent(address.user.id);
+        path += '&connectionName=' + encodeURIComponent(connectionName);
+        var options = {
+            method: 'DELETE',
+            url: urlJoin(this.getOAuthPath(address), path),
+            json: true
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err); });
+    };
+    ChatConnector.prototype.getSignInLink = function (address, connectionName, done) {
+        var state = {
+            ConnectionName: connectionName,
+            Conversation: {
+                activityId: address.id,
+                bot: address.bot,
+                channelId: address.channelId,
+                conversation: address.conversation,
+                serviceUrl: address.serviceUrl,
+                user: address.user
+            },
+            MsAppId: this.settings.appId
+        };
+        var finalState = Buffer.from(JSON.stringify(state)).toString('base64');
+        var path = 'api/botsignin/getsigninurl?state=' + encodeURIComponent(finalState);
+        var options = {
+            method: 'GET',
+            url: urlJoin(this.getOAuthPath(address), path)
+        };
+        this.authenticatedRequest(options, function (err, response, body) { return done(err, body); });
+    };
+    ChatConnector.prototype.emulateOAuthCards = function (serviceUrl, emulate, done) {
+        var path = 'api/usertoken/emulateOAuthCards?emulate=' + (!!emulate).toString();
+        var options = {
+            method: 'POST',
+            url: urlJoin(serviceUrl, path),
             json: true
         };
         this.authenticatedRequest(options, function (err, response, body) { return done(err); });
@@ -680,6 +768,9 @@ var ChatConnector = (function () {
                 break;
         }
         return path + '/v3/botstate/' + encodeURIComponent(address.channelId);
+    };
+    ChatConnector.prototype.getOAuthPath = function (address) {
+        return this.settings.endpoint.oAuthEndpoint;
     };
     ChatConnector.prototype.prepIncomingMessage = function (msg) {
         utils.moveFieldsTo(msg, msg, {
