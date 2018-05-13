@@ -7,8 +7,8 @@ var rp          = require('request-promise'),
 
 var url_ws = "https://2018hlin601ter16.proj.info-ufr.univ-montp2.fr/WebServiceBddTer16/requeteur.php";
 
-function insertUser(pseudo,idBot,session,callback){
-    var url = windows1252.encode(url_ws+"?cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot+"&session="+session);
+function insertUser(pseudo,adresse,callback){
+    var url = windows1252.encode(url_ws+"?cmd=insert_user&pseudo="+pseudo+"&adresse="+adresse);
 
     const options = {
         uri: url,
@@ -32,8 +32,8 @@ function insertUser(pseudo,idBot,session,callback){
     });
 }
 
-function getUserSession(pseudo,callback){
-    var url = windows1252.encode(url_ws+"?cmd=get_user_session&pseudo="+pseudo);
+function getUserAdresse(pseudo,callback){
+    var url = windows1252.encode(url_ws+"?cmd=get_user_adresse&pseudo="+pseudo);
 
     const options = {
         uri: url,
@@ -58,8 +58,8 @@ function getUserSession(pseudo,callback){
     });
 }
 
-function insertUserPost(pseudo,idBot,session,callback){
-    //var url = windows1252.encode(url_ws+"cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot+"&session="+session);
+function insertUserPost(pseudo,adresse,callback){
+    //var url = windows1252.encode(url_ws+"cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot+"&adresse="+adresse);
 
     const options = {
         method:'POST',
@@ -72,8 +72,7 @@ function insertUserPost(pseudo,idBot,session,callback){
         form: {
             'cmd': "insert_user",
             'pseudo': pseudo,
-            'idBot':idBot,
-            'session':session
+            'adresse':adresse
         },
 
         transform: function (body) {
@@ -227,4 +226,4 @@ module.exports.isRelationInBDD = isRelationInBDD;
 module.exports.desactiveDebugMode = desactiveDebugMode;
 module.exports.activeDebugMode = activeDebugMode;
 module.exports.isInDebugMode = isInDebugMode;
-module.exports.getUserSession = getUserSession;
+module.exports.getUserAdresse = getUserAdresse;

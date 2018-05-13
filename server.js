@@ -38,7 +38,7 @@ tools.initialization(function(hashmap_mc){
 
         var json_adresse = JSON.stringify(session_loc.message.address);//JSON.stringify(session_loc);
         //json_session
-            request.insertUserPost(pseudo,idBot,json_adresse,function(err, result){
+            request.insertUserPost(pseudo,json_adresse,function(err, result){
                 //console.log(json_session);
                 var message = session_loc.message.text;
                 if (message.substring(0,8)==="!sendlog"){
@@ -111,13 +111,12 @@ function sendLogToUser(email){
     });
 }
 exports.sendMessage = function (message,pseudo){
-    request.getUserSession(pseudo,function(err, adresse){
+    request.getUserAdresse(pseudo,function(err, adresse){
         if (!err){
-            //let session = new builder.Session(result);
-            //"callstack":[{"id":"*:/","state":{"BotBuilder.Data.WaterfallStep":0}}]
+
             var msg = new builder.Message().address(JSON.parse(adresse));
             msg.text(message);
-            //msg.textLocale('en-US');
+            
             bot.send(msg);
         }
 
