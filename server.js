@@ -46,8 +46,8 @@ tools.initialization(function(hashmap_mc){
                 }
                 else if (message.substring(0,12)==="!activedebug"){
                     request.activeDebugMode(pseudo, function(){
-                        sendMessage("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant :",pseudo);
-                        sendMessage("!desactive debug",pseudo);
+                        sendMessage("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant : '!desactive debug'",pseudo);
+
 
                     });
                 }
@@ -58,7 +58,6 @@ tools.initialization(function(hashmap_mc){
                 }
                 else {
                     analyse.parse(message,pseudo,hashmap_mc);
-                    //console.log("User id : "+session_loc.message.user.id);
                 }
             });
 
@@ -110,16 +109,16 @@ function sendLogToUser(email){
         }
     });
 }
-exports.sendMessage = function (message,pseudo){
+function sendMessage (message,pseudo){
     request.getUserAdresse(pseudo,function(err, adresse){
         if (!err){
-
             var msg = new builder.Message().address(JSON.parse(adresse));
             msg.text(message);
-            
+            msg.textFormat('xml');
             bot.send(msg);
         }
 
     });
+}
 
-};
+module.exports.sendMessage = sendMessage;

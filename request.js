@@ -96,8 +96,8 @@ function insertUserPost(pseudo,adresse,callback){
 
 }
 
-function insertRelation(fw_id,sw_id,rel_id,pseudo,callback){
-    var url = windows1252.encode(url_ws+"?cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
+function insertRelation(fw_id,sw_id,rel_id,pseudo,w,callback){
+    var url = windows1252.encode(url_ws+"?cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&w="+w+"&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
