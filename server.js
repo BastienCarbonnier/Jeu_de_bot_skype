@@ -42,7 +42,7 @@ tools.initialization(function(hashmap_mc){
                 //console.log(json_session);
                 var message = session_loc.message.text;
                 if (message.substring(0,8)==="!sendlog"){
-                    sendLogToUser(message.substring(9));
+                    sendLogToUser(message.substring(9),pseudo);
                 }
                 else if (message.substring(0,12)==="!activedebug"){
                     request.activeDebugMode(pseudo, function(){
@@ -67,7 +67,7 @@ tools.initialization(function(hashmap_mc){
     });
 });
 
-function sendLogToUser(email){
+function sendLogToUser(email,pseudo){
 
     if (process.env.MAIL_PASSWORD){
         var res =email.match(/>(.*)</g);
@@ -104,7 +104,7 @@ function sendLogToUser(email){
         if (error) {
             console.log(error);
         } else {
-            session.send("L'email a bien été envoyé à l'adresse suivante : "+email);
+            sendMessage("L'email a bien été envoyé à l'adresse suivante : "+email,pseudo);
             console.log('Email sent: ' + info.response);
         }
     });
