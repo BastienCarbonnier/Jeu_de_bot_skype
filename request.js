@@ -58,6 +58,32 @@ function getUserAdresse(pseudo,callback){
     });
 }
 
+function getUserLastFaFw(pseudo,callback){
+    var url = windows1252.encode(url_ws+"?cmd=get_user_last_fa_fw&pseudo="+pseudo);
+
+    const options = {
+        uri: url,
+        encoding: 'binary',
+        transform: function (body) {
+            return cheerio.load(body, {decodeEntities: false});
+        }
+    };
+
+    rp(options)
+    .then(($) => {
+
+        var fa = $('fa').text();
+        var fw = $('fw').text();
+        callback(null,fa,fw);
+
+
+    })
+    .catch((err) => {
+        console.log(err);
+        callback(err);
+    });
+}
+
 function insertUserPost(pseudo,adresse,callback){
     //var url = windows1252.encode(url_ws+"cmd=insert_user&pseudo="+pseudo+"&idBot="+idBot+"&adresse="+adresse);
 
@@ -96,8 +122,8 @@ function insertUserPost(pseudo,adresse,callback){
 
 }
 
-function insertRelation(fw_id,sw_id,rel_id,pseudo,w,rel_neg,callback){
-    var url = windows1252.encode(url_ws+"?cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&w="+w+"&pseudo="+pseudo+"&rel_neg="+rel_neg);
+function insertRelation(fa,fw,sw,rel_id,pseudo,w,rel_neg,callback){
+    var url = windows1252.encode(url_ws+"?cmd=insert_rel&fa="+fa+"&n1="+fw+"&n2="+sw+"&t="+rel_id+"&w="+w+"&pseudo="+pseudo+"&rel_neg="+rel_neg);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -135,7 +161,8 @@ function isRelationInBDD(fw,sw,rel_id,callback){
 
         var result = $('result').text();
         var rel_neg =  $('rel_neg').text();
-        
+        console.log(result);
+        console.log(rel_neg);
         callback(null,result,rel_neg);
 
 
@@ -229,3 +256,4 @@ module.exports.desactiveDebugMode = desactiveDebugMode;
 module.exports.activeDebugMode = activeDebugMode;
 module.exports.isInDebugMode = isInDebugMode;
 module.exports.getUserAdresse = getUserAdresse;
+module.exports.getUserLastFaFw = getUserLastFaFw;
