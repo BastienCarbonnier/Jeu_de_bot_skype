@@ -121,7 +121,7 @@ function insertRelation(fw_id,sw_id,rel_id,pseudo,w,rel_neg,callback){
 }
 
 function isRelationInBDD(fw,sw,rel_id,callback){
-    var url = windows1252.encode(url_ws+"?cmd=insert_rel&n1="+fw_id+"&n2="+sw_id+"&t="+rel_id+"&pseudo="+pseudo);
+    var url = windows1252.encode(url_ws+"?cmd=relation_exist&n1="+fw+"&n2="+sw+"&t="+rel_id);
     const options = {
         uri: url,
         encoding: 'binary',
@@ -134,7 +134,9 @@ function isRelationInBDD(fw,sw,rel_id,callback){
     .then(($) => {
 
         var result = $('result').text();
-        callback(null,result);
+        var rel_neg =  $('rel_neg').text();
+        
+        callback(null,result,rel_neg);
 
 
     })
