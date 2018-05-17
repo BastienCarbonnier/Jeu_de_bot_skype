@@ -58,8 +58,11 @@ function getUserAdresse(pseudo,callback){
     });
 }
 
-function getUserLastFaFw(pseudo,callback){
-    var url = windows1252.encode(url_ws+"?cmd=get_user_last_fa_fw&pseudo="+pseudo);
+function getUserLastFaFw(pseudo, is_question,callback){
+    var question;
+    if (is_question) question = 1;
+    else question =0;
+    var url = windows1252.encode(url_ws+"?cmd=get_user_last_fa_fw&pseudo="+pseudo+"&question="+question);
 
     const options = {
         uri: url,
@@ -146,8 +149,8 @@ function insertRelation(fa,fw,sw,rel_id,pseudo,w,rel_neg,callback){
     });
 }
 
-function isRelationInBDD(fw,sw,rel_id,callback){
-    var url = windows1252.encode(url_ws+"?cmd=relation_exist&n1="+fw+"&n2="+sw+"&t="+rel_id);
+function isRelationInBDD(fw,sw,rel_id,fa,pseudo,callback){
+    var url = windows1252.encode(url_ws+"?cmd=relation_exist&n1="+fw+"&n2="+sw+"&t="+rel_id+"&fa="+fa+"&pseudo="+pseudo);
     const options = {
         uri: url,
         encoding: 'binary',
