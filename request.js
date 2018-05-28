@@ -112,7 +112,7 @@ function insertUserPost(pseudo,adresse,callback){
     rp(options)
     .then(($) => {
 
-        var result = $('body').text();
+        var result = $('result').text();
         //console.log(result);
         callback(null,result);
 

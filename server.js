@@ -40,25 +40,43 @@ tools.initialization(function(hashmap_mc){
         //json_session
             request.insertUserPost(pseudo,json_adresse,function(err, result){
                 //console.log(json_session);
-                var message = session_loc.message.text;
-                if (message.substring(0,8)==="!sendlog"){
-                    sendLogToUser(message.substring(9),pseudo);
-                }
-                else if (message.substring(0,12)==="!activedebug"){
-                    request.activeDebugMode(pseudo, function(){
-                        sendMessage("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant : '!desactive debug'",pseudo);
-
-
-                    });
-                }
-                else if (message.substring(0,15)==="!desactivedebug"){
-                    request.desactiveDebugMode(pseudo, function(){
-                        sendMessage("Le mode debug a bien été désactivé",pseudo);
-                    });
+                if (result == "true"){
+                    var debut = "";
+                    debut += "Bonjour, \nJe suis un bot de gestion de connaissances, ";
+                    debut += "heureux de faire votre connaissance "+pseudo+" !\n";
+                    debut += "Vous pouvez me demander de l'aide en m'envoyant le message suivant \n!help\n";
+                    debut += "Amusez-vous bien !\n";
+                    sendMessage(debut,pseudo);
                 }
                 else {
-                    analyse.parse(message,pseudo,hashmap_mc);
+                    var message = session_loc.message.text;
+                    if (message.substring(0,8)==="!sendlog"){
+                        sendLogToUser(message.substring(9),pseudo);
+                    }
+                    else if (message.substring(0,12)==="!activedebug"){
+                        request.activeDebugMode(pseudo, function(){
+                            sendMessage("Le mode debug a bien été activé, pour le désactiver veuillez m'envoyer le message suivant : '!desactive debug'",pseudo);
+                        });
+                    }
+                    else if (message.substring(0,15)==="!desactivedebug"){
+                        request.desactiveDebugMode(pseudo, function(){
+                            sendMessage("Le mode debug a bien été désactivé",pseudo);
+                        });
+                    }
+                    else if (message.substring(0,5)==="!help"){
+                        var help = "Vous pouvez me poser des questions (ex : Une vache peut-elle brouter ?)\n";
+                        help += "Ou enrichir ma base de connaissances (ex : Une vache peut brouter.)\n";
+                        help += "Ou alors utiliser les commandes suivantes :\n";
+                        help += "!sendlog \'email\' : Je vais envoyer mes logs à l'email donné,\n";
+                        help += "!activedebug : Afin que je vous donne des informations suplémentaires lors de mes réponses,\n";
+                        help += "!desactivedebug : Afin que je desactive le mode debug\n";
+                        sendMessage(help,pseudo);
+                    }
+                    else {
+                        analyse.parse(message,pseudo,hashmap_mc);
+                    }
                 }
+
             });
 
 
